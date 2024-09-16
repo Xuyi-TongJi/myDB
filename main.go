@@ -11,6 +11,7 @@ func main() {
 	// Database
 	db := network.NewDbRouter(utils.GlobalObj.Path, utils.GlobalObj.BufferPoolMemory, utils.GlobalObj.Iso)
 	s.AddRouter(network.DbRouterMsgId, db)
+
 	utils.GlobalObj.TcpServer = s
 	s.Serve()
 }

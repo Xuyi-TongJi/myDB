@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/binary"
+	"log"
 	"reflect"
 	"sync"
 )
@@ -105,6 +106,7 @@ func (p *PageImpl) SetData(data []byte) {
 // 启动检查，检查进程上次退出是否是意外退出
 // 如果是意外退出，则上层需要执行恢复数据的逻辑
 func (p *PageImpl) CheckInitVersion() bool {
+	log.Printf("dfsfasdfsladflsdkfjasljdkfs,  %d\n", p.GetPageType())
 	if p.GetPageType() != DbMetaPage {
 		panic("Invalid page type when executing version checking\n")
 	}

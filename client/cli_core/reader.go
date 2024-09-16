@@ -1,6 +1,7 @@
 package cli_core
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"strconv"
@@ -76,26 +77,61 @@ func (pack *Pack) reset() {
 
 func (pack *Pack) doFmtOutput() {
 	if pack.readyToOutput {
+		defer pack.reset()
 		if pack.isQuerying == BULKARR {
-			var builder strings.Builder
-			for i, s := range pack.output {
-				builder.WriteString(s)
-				if i != len(pack.output)-1 {
-					builder.WriteString(SEPARATION)
+			row, err1 := strconv.Atoi(pack.output[0])
+			col, err2 := strconv.Atoi(pack.output[1])
+			log.Printf("[Reader] Get a table, row = %d, col = %d\n", row, col)
+			if err1 != nil || err2 != nil {
+				log.Printf("[Reader] An error occurs, mismatch with the data format of server\n")
+				return
+			}
+			// 每一列的最大长度
+			maxLength := make([]int, col)
+			index := 0
+			pack.output = pack.output[2:]
+			n := len(pack.output)
+			for i := 0; i < n; i++ {
+				if len(pack.output[i]) > maxLength[i%col] {
+					maxLength[i%col] = len(pack.output[i])
 				}
 			}
-			log.Printf("%s\n", builder.String())
-			// reset
+			sum := 0
+			for _, length := range maxLength {
+				sum += length
+			}
+			for i := 0; i < sum+col*2+col; i++ {
+				fmt.Printf("-")
+			}
+			fmt.Printf("\n")
+			for i := 0; i < row; i++ {
+				fmt.Printf("| ")
+				for j := 0; j < col; j++ {
+					fmt.Printf(pack.output[index])
+					mav := maxLength[j]
+					for i := len(pack.output[index]); i < mav; i++ {
+						fmt.Print(" ")
+					}
+					index += 1
+					fmt.Printf(" |")
+				}
+				fmt.Printf("\n")
+				for i := 0; i < sum+col*2+col; i++ {
+					fmt.Printf("-")
+				}
+				fmt.Printf("\n")
+			}
 		} else {
-			log.Printf("%s\n", pack.output[0])
+			if len(pack.output) > 0 {
+				fmt.Printf("%s\n", pack.output[0])
+			}
 		}
-		pack.reset()
 	}
 }
 
 func StartReader(conn net.Conn, stop chan error) {
 	pack := NewPack()
-	byteBuffer := make([]byte, 1024<<16)
+	byteBuffer := make([]byte, 1<<20)
 	// 待处理的消息长度
 	length := 0
 	for {

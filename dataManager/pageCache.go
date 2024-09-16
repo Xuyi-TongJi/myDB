@@ -94,9 +94,6 @@ func (p *PageCacheImpl) SetDsSize(maxPageNumbers int64) error {
 	if p.pageNumbers.Load() >= maxPageNumbers {
 		return nil
 	}
-	if err := p.ds.Truncate(maxPageNumbers * PageSize); err != nil {
-		return err
-	}
 	p.pageNumbers.Store(maxPageNumbers)
 	return nil
 }

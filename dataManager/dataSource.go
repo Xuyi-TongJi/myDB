@@ -44,7 +44,7 @@ func NewFileSystemDataSource(path string, lock *sync.Mutex) DataSource {
 			panic(err)
 		}
 	}
-	log.Printf("[DataManager] Open source file\n")
+	log.Printf("[Data Manager] Open source file\n")
 	fsd := &FileSystemDataSource{
 		file: f,
 		lock: lock,

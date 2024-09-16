@@ -5,7 +5,7 @@ package dataManager
 type LruBufferPool struct {
 }
 
-func (l *LruBufferPool) Get(key PoolObj) (PoolObj, error) {
+func (l *LruBufferPool) Get(objId int64) ([]byte, error) {
 	//TODO implement me
 	panic("implement me")
 }
